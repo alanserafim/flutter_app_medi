@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app_medi/screens/schedule.dart';
+import 'package:flutter_app_medi/screens/schedule_screen.dart';
 
 void main() {
   runApp(const MyApp());
