@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app_medi/components/schedule_item.dart';
+
+import 'components/schedule_item.dart';
 
 class Schedule extends StatelessWidget {
   const Schedule({super.key});
