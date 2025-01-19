@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app_medi/ui/initial/base_screen.dart';
 import 'package:flutter_app_medi/ui/initial/initial_screen.dart';
+import 'package:flutter_app_medi/ui/schedule/schedule_base_screen.dart';
 import 'package:flutter_app_medi/ui/schedule/schedule_screen.dart';
 
 void main() {
@@ -12,14 +14,19 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         fontFamily: 'Roboto', // Define a fonte padrão como Roboto
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: InitialScreen(),
+        initialRoute: '/',
+        routes: {
+          '/': (context) => BaseScreen(),
+          '/schedule': (context) => ScheduleBaseScreen(),
+          // '/medication': (context) => Screen2(),
+          // '/user': (context) => Screen3(),
+        }
     );
   }
 }
