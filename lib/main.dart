@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app_medi/ui/initial/base_screen.dart';
 import 'package:flutter_app_medi/ui/initial/initial_screen.dart';
+import 'package:flutter_app_medi/ui/medicine/medicine_screen.dart';
 import 'package:flutter_app_medi/ui/schedule/schedule_base_screen.dart';
 import 'package:flutter_app_medi/ui/schedule/schedule_screen.dart';
 
@@ -24,7 +25,7 @@ class MyApp extends StatelessWidget {
         routes: {
           '/': (context) => BaseScreen(),
           '/schedule': (context) => ScheduleBaseScreen(),
-          // '/medication': (context) => Screen2(),
+          '/medication': (context) => MedicineScreen(),
           // '/user': (context) => Screen3(),
         }
     );

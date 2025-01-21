@@ -9,6 +9,27 @@ class ScheduleBaseScreen extends StatefulWidget {
 }
 
 class _ScheduleBaseScreenState extends State<ScheduleBaseScreen> {
+
+  int _selectedIndex = 0;
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+      switch (index) {
+        case 0:
+          Navigator.pushReplacementNamed(context, '/schedule');
+          break;
+        case 1:
+          Navigator.pushReplacementNamed(context, '/medication');
+          break;
+        case 2:
+          Navigator.pushReplacementNamed(context, '/screen3');
+          break;
+      }
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,6 +85,7 @@ class _ScheduleBaseScreenState extends State<ScheduleBaseScreen> {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
+        onTap: _onItemTapped,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.calendar_today),
@@ -72,6 +94,7 @@ class _ScheduleBaseScreenState extends State<ScheduleBaseScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.note_add),
             label: 'Novo Medicamento',
+
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
