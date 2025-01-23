@@ -17,13 +17,13 @@ class _ScheduleBaseScreenState extends State<ScheduleBaseScreen> {
       _selectedIndex = index;
       switch (index) {
         case 0:
-          Navigator.pushReplacementNamed(context, '/schedule');
+          Navigator.pushNamed(context, '/schedule');
           break;
         case 1:
-          Navigator.pushReplacementNamed(context, '/medication');
+          Navigator.pushNamed(context, '/medication');
           break;
         case 2:
-          Navigator.pushReplacementNamed(context, '/screen3');
+          Navigator.pushNamed(context, '/user');
           break;
       }
     });
