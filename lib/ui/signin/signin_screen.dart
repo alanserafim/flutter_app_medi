@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app_medi/data/repositories/user_repository.dart';
+
+import '../../domain/models/user.dart';
 
 class SigninScreen extends StatefulWidget {
   const SigninScreen({super.key, required this.onBack});
@@ -15,6 +18,33 @@ class _SigninScreenState extends State<SigninScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  Future handeSignin(email, password) async {
+    List user = await UserRepository().find(email);
+    if (user.isNotEmpty) {
+      if(user[0].password == password) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Login efetuado com sucesso'),
+          ),
+        );
+        Navigator.pushNamed(context, '/schedule');
+      }  else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Usuário ou senha incorreta'),
+          ),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Usuário ou senha incorreta'),
+        ),
+      );
+    }
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -92,15 +122,9 @@ class _SigninScreenState extends State<SigninScreen> {
               width: 250,
               height: 70,
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    // some signin logic
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Login efetuado com sucesso'),
-                      ),
-                    );
-                    Navigator.pushNamed(context, '/schedule');
+                    await handeSignin(emailController.text, passwordController.text);
                   }
                 },
                 style: ElevatedButton.styleFrom(

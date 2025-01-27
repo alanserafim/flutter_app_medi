@@ -36,6 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   sqflite:
   flutter_svg:
+  intl:
 
 dev_dependencies:
   flutter_test:

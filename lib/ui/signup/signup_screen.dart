@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app_medi/data/repositories/user_repository.dart';
+import 'package:flutter_app_medi/domain/models/user.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key, required this.onBack});
@@ -11,10 +13,28 @@ class SignupScreen extends StatefulWidget {
 
 class _SignupScreenState extends State<SignupScreen> {
   //Variaveis do formulário
-  TextEditingController namelController = TextEditingController();
+  TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  Future handleSignUp(User user) async {
+      var userExits = await UserRepository().find(user.email);
+      if (userExits.isNotEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Usuário ja existe na base de dados'),
+            ));
+      } else {
+        await UserRepository().save(user);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('cadastro efetuado com sucesso'),
+          ),
+        );
+        Navigator.pushNamed(context, '/schedule');
+      }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +81,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 children: [
                   SizedBox(height: 16),
                   TextFormField(
-                    controller: namelController,
+                    controller: nameController,
                     validator: (value) {
                       if (value!.isEmpty) {
                         return 'Insira um nome válido';
@@ -97,15 +117,15 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
             ),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 if (_formKey.currentState!.validate()) {
-                  // some signup logic
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('cadastro efetuado com sucesso'),
-                    ),
+                  User user = User(
+                    name: nameController.text,
+                    email: emailController.text,
+                    password: passwordController.text,
+                    birthDate: "00/00/0000",
                   );
-                  Navigator.pushNamed(context, '/schedule');
+                  await handleSignUp(user);
                 }
               },
               style: ElevatedButton.styleFrom(

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app_medi/ui/initial/base_screen.dart';
+import 'package:flutter_app_medi/ui/medicine/medicine_form_screen.dart';
+import 'package:flutter_app_medi/ui/medicine/medicine_list_screen.dart';
 import 'package:flutter_app_medi/ui/medicine/medicine_screen.dart';
 import 'package:flutter_app_medi/ui/schedule/schedule_base_screen.dart';
 import 'package:flutter_app_medi/ui/user/user_screen.dart';
@@ -25,6 +27,8 @@ class MyApp extends StatelessWidget {
           '/': (context) => BaseScreen(),
           '/schedule': (context) => ScheduleBaseScreen(),
           '/medication': (context) => MedicineScreen(),
+          '/medication/add': (context) => MedicineFormScreen(),
+          '/medication/list': (context) => MedicineListScreen(),
           '/user': (context) => UserScreen(),
         }
     );

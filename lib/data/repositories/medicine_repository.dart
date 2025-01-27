@@ -1,4 +1,7 @@
+import 'package:sqflite/sqflite.dart';
+
 import '../../domain/models/medicine.dart';
+import '../config/databaseHelper.dart';
 
 class MedicineRepository {
 
@@ -20,20 +23,75 @@ class MedicineRepository {
       '$_apelido TEXT, '
       '$_tipo TEXT, '
       '$_dosagem TEXT, '
-      '$_frequencia_semanal TEXT, '
-      '$_frequencia_diaria TEXT, '
-      '$_dose_intervalo TEXT, '
-      '$_horario_primeira_dose TEXT, '
-      '$_duracao_tratamento TEXT, ';
+      '$_frequencia_semanal INTEGER, '
+      '$_frequencia_diaria INTEGER, '
+      '$_dose_intervalo INTEGER, '
+      '$_duracao_tratamento INTEGER, '
+      '$_horario_primeira_dose TEXT)';
 
-  save(Medicine medicine) async {}
-  update(Medicine medicine) async {}
-  findAll() async {}
-  find(String medicineName) async {}
-  delete(String medicineName) async {}
+  final DatabaseHelper _dbHelper = DatabaseHelper.instance;
+
+
+  //CRUD
+  Future<List<Medicine>>findAll() async {
+    print("Acessando o findAll - MedicineRepository");
+    final Database bancoDeDados = await _dbHelper.database;
+    final List<Map<String, dynamic>> result = await bancoDeDados.query(_tablename);
+    return toList(result);
+  }
+  Future<List<Medicine>> find(String medicineName) async {
+    print("Acessando find - MedicineRepository ");
+    final Database bancoDeDados = await _dbHelper.database;
+    final List<Map<String, dynamic>> result = await bancoDeDados.query(
+      _tablename,
+      where: '$_nome = ?',
+      whereArgs: [medicineName],
+    );
+    return toList(result);
+  }
+  save(Medicine medicine) async {
+    print("Iniciando o save");
+    final Database bancoDeDados = await _dbHelper.database;
+    Map<String, dynamic> medicineMap = toMap(medicine);
+
+    var medicineExists = await find(medicine.name);
+    if (medicineExists.isEmpty) {
+      print("Medicamento não existente");
+      return await bancoDeDados.insert(_tablename, medicineMap);
+    } else {
+      print("Medicamento existente na base de dados");
+    }
+  }
+  update(Medicine medicine) async {
+    print("Iniciando o update");
+    final Database bancoDeDados = await _dbHelper.database;
+    Map<String, dynamic> medicineMap = toMap(medicine);
+
+    var medicineExists = await find(medicine.name);
+    if (medicineExists.isEmpty) {
+      print("medicamento não existente");
+    } else {
+      return bancoDeDados.update(
+        _tablename,
+        medicineMap,
+        where: '$_nome = ?',
+        whereArgs: [medicine.name],
+      );
+    }
+  }
+  delete(String medicineName) async {
+    print("Deletando medicamento");
+    final Database bancoDeDados = await _dbHelper.database;
+    return bancoDeDados.delete(
+      _tablename,
+      where: '$_nome = ?',
+      whereArgs: [medicineName],
+    );
+  }
 
   // Métodos de apoio
   List<Medicine> toList(List<Map<String, dynamic>> mapaDeMedicamentos) {
+    print("Método toList - MedicineRepository");
     final List<Medicine> medicines = [];
     for (Map<String, dynamic> linha in mapaDeMedicamentos) {
       final Medicine medicine = Medicine(
@@ -44,7 +102,7 @@ class MedicineRepository {
         weeklyFrequency: linha[_frequencia_semanal],
         dailyFrequency: linha[_frequencia_diaria],
         doseInterval: linha[_dose_intervalo],
-        firstDoseTime: linha[_horario_primeira_dose],
+        firstDoseTime: DateTime.parse(linha[_horario_primeira_dose]),
         treatmentDuration: linha[_duracao_tratamento],
 
       );
@@ -53,6 +111,7 @@ class MedicineRepository {
     return medicines;
   }
   Map<String, dynamic> toMap(Medicine medicine) {
+    print("Convertendo medicamento em map - MedicineRepository");
     final Map<String, dynamic> mapaDeMedicamentos = Map();
     mapaDeMedicamentos[_nome] = medicine.name;
     mapaDeMedicamentos[_apelido] = medicine.alias;
@@ -61,8 +120,10 @@ class MedicineRepository {
     mapaDeMedicamentos[_frequencia_semanal] = medicine.weeklyFrequency;
     mapaDeMedicamentos[_frequencia_diaria] = medicine.dailyFrequency;
     mapaDeMedicamentos[_dose_intervalo] = medicine.doseInterval;
-    mapaDeMedicamentos[_horario_primeira_dose] = medicine.firstDoseTime;
+    mapaDeMedicamentos[_horario_primeira_dose] = medicine.firstDoseTime.toIso8601String();
     mapaDeMedicamentos[_duracao_tratamento] = medicine.treatmentDuration;
+    print('Mapa de medicamentos: $mapaDeMedicamentos');
     return mapaDeMedicamentos;
   }
+
 }
