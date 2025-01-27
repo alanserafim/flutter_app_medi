@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app_medi/data/repositories/user_repository.dart';
 
-import '../../domain/models/user.dart';
-
 class SigninScreen extends StatefulWidget {
   const SigninScreen({super.key, required this.onBack});
 
