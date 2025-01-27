@@ -97,6 +97,10 @@ class _SignupScreenState extends State<SignupScreen> {
                       if (value!.isEmpty) {
                         return 'Insira um email válido';
                       }
+                      final emailRegex = RegExp(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$');
+                      if (!emailRegex.hasMatch(value)) {
+                          return 'Por favor, insira um email válido.';
+                      }
                       return null;
                     },
                     decoration: InputDecoration(labelText: 'e-mail'),
@@ -106,7 +110,19 @@ class _SignupScreenState extends State<SignupScreen> {
                     controller: passwordController,
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return 'Insira uma senha válido';
+                        return 'Insira uma senha válida';
+                      }
+                      if (value.length < 8) {
+                        return 'A senha deve ter pelo menos 8 caracteres.';
+                      }
+                      if (!RegExp(r'^(?=.*[A-Z])').hasMatch(value)) {
+                        return 'A senha deve conter pelo menos uma letra maiúscula.';
+                      }
+                      if (!RegExp(r'^(?=.*\d)').hasMatch(value)) {
+                        return 'A senha deve conter pelo menos um número.';
+                      }
+                      if (!RegExp(r'^(?=.*[!@#\$&*~])').hasMatch(value)) {
+                        return 'A senha deve conter pelo menos um caractere especial (!@#\$&*~).';
                       }
                       return null;
                     },

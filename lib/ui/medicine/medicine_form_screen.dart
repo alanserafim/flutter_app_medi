@@ -45,6 +45,8 @@ class _MedicineScreenState extends State<MedicineFormScreen> {
   TextEditingController firstDoseTimeController = TextEditingController();
   TextEditingController treatmentDurationController = TextEditingController();
 
+  String? _selectedValue; 
+
 
   @override
   Widget build(BuildContext context) {
@@ -82,6 +84,9 @@ class _MedicineScreenState extends State<MedicineFormScreen> {
                               if (value!.isEmpty) {
                                 return 'o campo nome do remédio deve ser preenchido';
                               }
+                              if (value.length < 2) {
+                                return 'O nome deve ter pelo menos 2 caracteres.';
+                              }
                               return null;
                             },
                             decoration: InputDecoration(labelText: 'nome do remédio'),
@@ -95,24 +100,74 @@ class _MedicineScreenState extends State<MedicineFormScreen> {
                               if (value!.isEmpty) {
                                 return 'o campo apelido do remédio deve ser preenchido';
                               }
+                              if (value.length < 2) {
+                                return 'O apelido deve ter pelo menos 2 caracteres.';
+                              }
                               return null;
                             },
                             decoration: InputDecoration(labelText: 'apelido do remédio'),
                             style: TextStyle(fontSize: 20),
                           ),
                           SizedBox(height: 16),
-                          TextFormField(
-                            controller: typeController,
-                            keyboardType: TextInputType.text,
+                          DropdownButtonFormField(
+                            decoration: InputDecoration(
+                              labelText: 'Selecione uma opção',
+                            ),
+                            value: _selectedValue,
+                            items: [
+                              DropdownMenuItem(
+                                value: 'comprimido',
+                                child: Text('Comprimido'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'injeção',
+                                child: Text('Injeção'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'solução',
+                                child: Text('Solução (líquido)'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'gotas',
+                                child: Text('Gotas'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'inalador',
+                                child: Text('inalador'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'pó',
+                                child: Text('Pó'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'outro',
+                                child: Text('Outro'),
+                              ),
+                            ],
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedValue = value; // Atualiza o valor selecionado
+                              });
+                            },
                             validator: (value) {
-                              if (value!.isEmpty) {
-                                return 'o campo tipo deve ser preenchido';
+                              if (value == null) {
+                                return 'Por favor, selecione uma opção.';
                               }
                               return null;
                             },
-                            decoration: InputDecoration(labelText: 'tipo do remédio'),
-                            style: TextStyle(fontSize: 20),
                           ),
+                          // TextFormField(
+                          //   controller: typeController,
+                          //   keyboardType: TextInputType.text,
+                          //   validator: (value) {
+                          //     if (value!.isEmpty) {
+                          //       return 'o campo tipo deve ser preenchido';
+                          //     }
+                          //     return null;
+                          //   },
+                          //   decoration: InputDecoration(labelText: 'tipo do remédio'),
+                          //   style: TextStyle(fontSize: 20),
+                          // ),
                           SizedBox(height: 16),
                           TextFormField(
                             controller: dosageController,
@@ -134,9 +189,13 @@ class _MedicineScreenState extends State<MedicineFormScreen> {
                               if (value!.isEmpty) {
                                 return 'o campo frequência semanal deve ser preenchido';
                               }
+                              final regex = RegExp(r'^\d+$');
+                              if (regex.hasMatch(value)) {
+                                  return 'Digite um valor numérico';
+                              }
                               return null;
                             },
-                            decoration: InputDecoration(labelText: 'Frequência semanal'),
+                            decoration: InputDecoration(labelText: 'Frequência semanal em dias'),
                             style: TextStyle(fontSize: 20),
                           ),
                           SizedBox(height: 16),
@@ -146,6 +205,10 @@ class _MedicineScreenState extends State<MedicineFormScreen> {
                             validator: (value) {
                               if (value!.isEmpty) {
                                 return 'o campo frequência diária deve ser preenchido';
+                              }
+                              final regex = RegExp(r'^\d+$');
+                              if (regex.hasMatch(value)) {
+                                  return 'Digite um valor numérico';
                               }
                               return null;
                             },
@@ -160,9 +223,13 @@ class _MedicineScreenState extends State<MedicineFormScreen> {
                               if (value!.isEmpty) {
                                 return 'o campo intervalo entre as doses deve ser preenchido';
                               }
+                              final regex = RegExp(r'^\d+$');
+                              if (regex.hasMatch(value)) {
+                                  return 'Digite um valor numérico';
+                              }
                               return null;
                             },
-                            decoration: InputDecoration(labelText: 'intervalo entre as doses'),
+                            decoration: InputDecoration(labelText: 'intervalo entre as doses (minutos)'),
                             style: TextStyle(fontSize: 20),
                           ),
                           SizedBox(height: 16),
@@ -186,9 +253,13 @@ class _MedicineScreenState extends State<MedicineFormScreen> {
                               if (value!.isEmpty) {
                                 return 'o campo duração do tratamento deve ser preenchido';
                               }
+                              final regex = RegExp(r'^\d+$');
+                              if (regex.hasMatch(value)) {
+                                  return 'Digite um valor numérico';
+                              }
                               return null;
                             },
-                            decoration: InputDecoration(labelText: 'duração do tratamento'),
+                            decoration: InputDecoration(labelText: 'duração do tratamento (dias)'),
                             style: TextStyle(fontSize: 20),
                           ),
                         ],
@@ -206,7 +277,7 @@ class _MedicineScreenState extends State<MedicineFormScreen> {
                               dosage: dosageController.text,
                               dailyFrequency: int.parse(dailyFrequencyController.text),
                               weeklyFrequency: int.parse(weeklyFrequencyController.text),
-                              doseInterval: int.parse(doseIntervalController.text) * 60,
+                              doseInterval: int.parse(doseIntervalController.text),
                               firstDoseTime: DateFormat('dd/MM/yyyy HH:mm').parse(firstDoseTimeController.text),
                               treatmentDuration: int.parse(treatmentDurationController.text)
                           );
@@ -254,3 +325,64 @@ class _MedicineScreenState extends State<MedicineFormScreen> {
     );
   }
 }
+
+/*
+DateTime? _selectedDateTime;
+
+  Future<void> _selectDateTime(BuildContext context) async {
+    // Seleção de data
+    final DateTime? selectedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+
+    if (selectedDate != null) {
+      // Seleção de hora
+      final TimeOfDay? selectedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now(),
+      );
+
+      if (selectedTime != null) {
+        setState(() {
+          _selectedDateTime = DateTime(
+            selectedDate.year,
+            selectedDate.month,
+            selectedDate.day,
+            selectedTime.hour,
+            selectedTime.minute,
+          );
+        });
+      }
+    }
+  }
+
+
+/// dentro
+
+TextFormField(
+                readOnly: true,
+                decoration: InputDecoration(
+                  labelText: 'Data e Hora',
+                  border: OutlineInputBorder(),
+                  suffixIcon: Icon(Icons.calendar_today),
+                ),
+                onTap: () => _selectDateTime(context),
+                validator: (value) {
+                  if (_selectedDateTime == null) {
+                    return 'Por favor, selecione uma data e hora.';
+                  }
+                  return null;
+                },
+                controller: TextEditingController(
+                  text: _selectedDateTime != null
+                      ? '${_selectedDateTime!.day}/${_selectedDateTime!.month}/${_selectedDateTime!.year} ${_selectedDateTime!.hour}:${_selectedDateTime!.minute.toString().padLeft(2, '0')}'
+                      : '',
+                ),
+              ),
+              SizedBox(height: 20),
+
+
+*/

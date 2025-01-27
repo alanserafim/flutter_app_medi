@@ -92,7 +92,11 @@ class _SigninScreenState extends State<SigninScreen> {
                     controller: emailController,
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return 'Insira um email válido';
+                        return 'O campo e-mail dever ser preenchido';
+                      }
+                      final emailRegex = RegExp(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$');
+                      if (!emailRegex.hasMatch(value)) {
+                          return 'Por favor, insira um email válido.';
                       }
                       return null;
                     },
@@ -104,7 +108,7 @@ class _SigninScreenState extends State<SigninScreen> {
                     controller: passwordController,
                     validator: (value) {
                       if (value!.isEmpty) {
-                        return 'Insira uma senha válida';
+                        return 'O campo senha deve ser preenchido';
                       }
                       return null;
                     },
