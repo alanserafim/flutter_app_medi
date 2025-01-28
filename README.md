@@ -10,11 +10,6 @@ A medication control app
 ### Disciplinas: 
 * Desenvolvimento Híbrido de Aplicativos
   
-<fig>
-  <p>Imagem do projeto</p>
-</fig>
-
-
 ## Inicialização
 Instruções para inicializar o projeto
 
@@ -23,8 +18,8 @@ As seguintes ferramentas foram usadas na construção do projeto:
 
 ### 👉 **_Mobile_**
 
-- Tecnologia 1
-- Tecnologia 2
+- Flutter
+- SQFLite
 
 ### 👉 **_Desenvolvimento Geral_**
 
@@ -35,7 +30,7 @@ As seguintes ferramentas foram usadas na construção do projeto:
 - Reuniões:
   - Teams
 - Diagramas:
-  - VisualParadigma
+  - VisualParadigm
 - Apresentações:
   - Youtube
 
@@ -57,14 +52,13 @@ A persistência local é realizada por meio de banco de dados relacional utiliza
 
 * Inserir imagem do diagrama
 
-### Mockup
+### Prototipação
 
-* Inserir imagem do mockup
+* Inserir imagem
 
 ### Links do Projeto
 
-* X (#)
-* X (#)
+* Prototipação de Alta fidelidade (https://www.figma.com/design/SwaRsyQwtxb0Pbk0ZrNK6X/medi?node-id=2-11&t=EB12qsyznMdNahMI-1)
 
 ## Conceitos básicos
 
