@@ -1,6 +1,6 @@
 # Aplicativo medi - Controle de Medicamentos
 
-A medication control app
+![medi](./docs/app.png)
 
 ## Projeto da disciplina
 
@@ -10,8 +10,6 @@ A medication control app
 ### Disciplinas: 
 * Desenvolvimento Híbrido de Aplicativos
   
-## Inicialização
-Instruções para inicializar o projeto
 
 ## Ferramentas
 As seguintes ferramentas foram usadas na construção do projeto:
@@ -50,15 +48,15 @@ A persistência local é realizada por meio de banco de dados relacional utiliza
 
 ### Diagrama de Classes de Domínio
 
-* Inserir imagem do diagrama
+![diagrama](./docs/diagrama_classes_dominio.png)
 
 ### Prototipação
 
-* Inserir imagem
+![Prototipação](./docs/prototipacao.png)
 
 ### Links do Projeto
 
-* Prototipação de Alta fidelidade (https://www.figma.com/design/SwaRsyQwtxb0Pbk0ZrNK6X/medi?node-id=2-11&t=EB12qsyznMdNahMI-1)
+* [Prototipação de Alta fidelidade](https://www.figma.com/design/SwaRsyQwtxb0Pbk0ZrNK6X/medi?node-id=2-11&t=EB12qsyznMdNahMI-1)
 
 ## Conceitos básicos
 
