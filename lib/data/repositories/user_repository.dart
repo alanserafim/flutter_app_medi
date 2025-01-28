@@ -22,9 +22,12 @@ class UserRepository {
   findAll() async {
     print("Acessando o findAll - userRepository");
     final Database bancoDeDados = await _dbHelper.database;
-    final List<Map<String, dynamic>> result = await bancoDeDados.query(_tablename);
+    final List<Map<String, dynamic>> result = await bancoDeDados.query(
+      _tablename,
+    );
     return toList(result);
   }
+
   Future<List<User>> find(String email) async {
     print("Acessando o find - UserRepository");
     final Database bancoDeDados = await _dbHelper.database;
@@ -50,6 +53,7 @@ class UserRepository {
       return null;
     }
   }
+
   update(User user) async {
     print("Iniciando o update - UserRepository");
     final Database bancoDeDados = await _dbHelper.database;
@@ -67,6 +71,7 @@ class UserRepository {
       );
     }
   }
+
   delete(String userName) async {
     print("Deletando usuário - userRepository");
     final Database bancoDeDados = await _dbHelper.database;
@@ -92,6 +97,7 @@ class UserRepository {
     }
     return users;
   }
+
   Map<String, dynamic> toMap(User user) {
     print("Metodo toMap - UserRepository");
     final Map<String, dynamic> mapaDeUsuarios = Map();

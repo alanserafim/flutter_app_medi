@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
-
 import '../../domain/models/dose.dart';
 import '../config/databaseHelper.dart';
 
@@ -38,8 +37,18 @@ class DoseRepository {
     final Database bancoDeDados = await _dbHelper.database;
     final List<Map<String, dynamic>> result = await bancoDeDados.query(
       _tablename,
-      where: '$_nome = ?',
+      where: '$_nome = ? AND $_dataHora = ?',
       whereArgs: [doseName],
+    );
+    return toList(result);
+  }
+  Future<List<Dose>> findByNameAndDayTime(String name, DateTime dayTime) async {
+    print("Acessando find - DoseRepository ");
+    final Database bancoDeDados = await _dbHelper.database;
+    final List<Map<String, dynamic>> result = await bancoDeDados.query(
+      _tablename,
+      where: '$_nome = ? AND $_dataHora = ?',
+      whereArgs: [name, dayTime.toIso8601String()],
     );
     return toList(result);
   }
@@ -57,6 +66,23 @@ class DoseRepository {
       where: '$_nome = ?',
       whereArgs: [doseName],
     );
+  }
+  update(Dose dose) async {
+    print("Iniciando o update");
+    final Database bancoDeDados = await _dbHelper.database;
+    Map<String, dynamic> doseMap = toMap(dose);
+
+    var doseExists = await findByNameAndDayTime(dose.name, dose.dayTime);
+    if (doseExists.isEmpty) {
+      print("Dose não existente");
+    } else {
+      return bancoDeDados.update(
+        _tablename,
+        doseMap,
+        where: '$_nome = ? AND $_dataHora = ?',
+        whereArgs: [dose.name, dose.dayTime.toIso8601String()],
+      );
+    }
   }
 
   // Métodos de apoio

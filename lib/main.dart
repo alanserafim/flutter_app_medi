@@ -22,15 +22,15 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-        initialRoute: '/',
-        routes: {
-          '/': (context) => BaseScreen(),
-          '/schedule': (context) => ScheduleBaseScreen(),
-          '/medication': (context) => MedicineScreen(),
-          '/medication/add': (context) => MedicineFormScreen(),
-          '/medication/list': (context) => MedicineListScreen(),
-          '/user': (context) => UserScreen(),
-        }
+      initialRoute: '/',
+      routes: {
+        '/': (context) => BaseScreen(),
+        '/schedule': (context) => ScheduleBaseScreen(),
+        '/medication': (context) => MedicineScreen(),
+        '/medication/add': (context) => MedicineFormScreen(),
+        '/medication/list': (context) => MedicineListScreen(),
+        '/user': (context) => UserScreen(),
+      },
     );
   }
 }

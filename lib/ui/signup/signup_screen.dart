@@ -19,21 +19,18 @@ class _SignupScreenState extends State<SignupScreen> {
   final _formKey = GlobalKey<FormState>();
 
   Future handleSignUp(User user) async {
-      var userExits = await UserRepository().find(user.email);
-      if (userExits.isNotEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Usuário ja existe na base de dados'),
-            ));
-      } else {
-        await UserRepository().save(user);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('cadastro efetuado com sucesso'),
-          ),
-        );
-        Navigator.pushNamed(context, '/schedule');
-      }
+    var userExits = await UserRepository().find(user.email);
+    if (userExits.isNotEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Usuário ja existe na base de dados')),
+      );
+    } else {
+      await UserRepository().save(user);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('cadastro efetuado com sucesso')),
+      );
+      Navigator.pushNamed(context, '/schedule');
+    }
   }
 
   @override
@@ -97,9 +94,11 @@ class _SignupScreenState extends State<SignupScreen> {
                       if (value!.isEmpty) {
                         return 'Insira um email válido';
                       }
-                      final emailRegex = RegExp(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$');
+                      final emailRegex = RegExp(
+                        r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$',
+                      );
                       if (!emailRegex.hasMatch(value)) {
-                          return 'Por favor, insira um email válido.';
+                        return 'Por favor, insira um email válido.';
                       }
                       return null;
                     },

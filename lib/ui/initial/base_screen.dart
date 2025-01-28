@@ -24,14 +24,10 @@ class _BaseScreenState extends State<BaseScreen> {
                 flex: 3,
                 child: Container(
                   alignment: Alignment.center,
-                  child: Image.asset(
-                      'assets/images/medical_prescription.png'),
+                  child: Image.asset('assets/images/medical_prescription.png'),
                 ),
               ),
-              Expanded(
-                flex: 2,
-                child: Container(),
-              ),
+              Expanded(flex: 2, child: Container()),
             ],
           ),
           Align(
@@ -64,4 +60,3 @@ class _BaseScreenState extends State<BaseScreen> {
     }
   }
 }
-

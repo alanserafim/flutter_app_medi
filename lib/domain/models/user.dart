@@ -1,5 +1,4 @@
 class User {
-
   String name;
   String email;
   String birthDate;
@@ -11,6 +10,4 @@ class User {
     required this.birthDate,
     required this.password,
   });
-
-
 }

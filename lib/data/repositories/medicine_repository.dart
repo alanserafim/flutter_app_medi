@@ -4,9 +4,8 @@ import '../../domain/models/medicine.dart';
 import '../config/databaseHelper.dart';
 
 class MedicineRepository {
-
   static const String _nome = 'nome';
-  static const String _apelido= 'apelido';
+  static const String _apelido = 'apelido';
   static const String _tipo = 'tipo';
   static const String _dosagem = 'dosagem';
   static const String _frequencia_semanal = 'frequencia_semanal';
@@ -31,14 +30,15 @@ class MedicineRepository {
 
   final DatabaseHelper _dbHelper = DatabaseHelper.instance;
 
-
-  //CRUD
-  Future<List<Medicine>>findAll() async {
+  Future<List<Medicine>> findAll() async {
     print("Acessando o findAll - MedicineRepository");
     final Database bancoDeDados = await _dbHelper.database;
-    final List<Map<String, dynamic>> result = await bancoDeDados.query(_tablename);
+    final List<Map<String, dynamic>> result = await bancoDeDados.query(
+      _tablename,
+    );
     return toList(result);
   }
+
   Future<List<Medicine>> find(String medicineName) async {
     print("Acessando find - MedicineRepository ");
     final Database bancoDeDados = await _dbHelper.database;
@@ -49,6 +49,7 @@ class MedicineRepository {
     );
     return toList(result);
   }
+
   save(Medicine medicine) async {
     print("Iniciando o save");
     final Database bancoDeDados = await _dbHelper.database;
@@ -62,6 +63,7 @@ class MedicineRepository {
       print("Medicamento existente na base de dados");
     }
   }
+
   update(Medicine medicine) async {
     print("Iniciando o update");
     final Database bancoDeDados = await _dbHelper.database;
@@ -79,6 +81,7 @@ class MedicineRepository {
       );
     }
   }
+
   delete(String medicineName) async {
     print("Deletando medicamento");
     final Database bancoDeDados = await _dbHelper.database;
@@ -104,26 +107,26 @@ class MedicineRepository {
         doseInterval: linha[_dose_intervalo],
         firstDoseTime: DateTime.parse(linha[_horario_primeira_dose]),
         treatmentDuration: linha[_duracao_tratamento],
-
       );
       medicines.add(medicine);
     }
     return medicines;
   }
+
   Map<String, dynamic> toMap(Medicine medicine) {
     print("Convertendo medicamento em map - MedicineRepository");
     final Map<String, dynamic> mapaDeMedicamentos = Map();
     mapaDeMedicamentos[_nome] = medicine.name;
     mapaDeMedicamentos[_apelido] = medicine.alias;
     mapaDeMedicamentos[_tipo] = medicine.type;
-    mapaDeMedicamentos[_dosagem] =  medicine.dosage;
+    mapaDeMedicamentos[_dosagem] = medicine.dosage;
     mapaDeMedicamentos[_frequencia_semanal] = medicine.weeklyFrequency;
     mapaDeMedicamentos[_frequencia_diaria] = medicine.dailyFrequency;
     mapaDeMedicamentos[_dose_intervalo] = medicine.doseInterval;
-    mapaDeMedicamentos[_horario_primeira_dose] = medicine.firstDoseTime.toIso8601String();
+    mapaDeMedicamentos[_horario_primeira_dose] =
+        medicine.firstDoseTime.toIso8601String();
     mapaDeMedicamentos[_duracao_tratamento] = medicine.treatmentDuration;
     print('Mapa de medicamentos: $mapaDeMedicamentos');
     return mapaDeMedicamentos;
   }
-
 }

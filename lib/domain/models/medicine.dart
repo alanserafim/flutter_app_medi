@@ -1,13 +1,12 @@
 class Medicine {
-
   String name;
   String alias;
   String type;
   String dosage;
   int weeklyFrequency;
-  int dailyFrequency; // how many times per day
-  int doseInterval;  // in minutes
-  int treatmentDuration; //in days
+  int dailyFrequency;
+  int doseInterval;
+  int treatmentDuration;
   DateTime firstDoseTime;
 
   Medicine({
@@ -21,6 +20,4 @@ class Medicine {
     required this.firstDoseTime,
     required this.treatmentDuration,
   });
-
-
 }

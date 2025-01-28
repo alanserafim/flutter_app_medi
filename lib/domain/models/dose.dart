@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app_medi/domain/models/medicine.dart';
 
 class Dose {
   String name;
@@ -17,6 +16,4 @@ class Dose {
     required this.icon,
     required this.status,
   });
-
-
 }
