@@ -29,28 +29,31 @@ As seguintes ferramentas foram usadas na construção do projeto:
   - Teams
 - Diagramas:
   - VisualParadigm
-- Apresentações:
-  - Youtube
 
 ## Introdução
 
 Este projeto possui o objetivo principal **implementar um aplicativo de gerenciamento de medicamentos**.  
 
-Com os objetivos gerais controlar medicamentos e lembrar usuários sobre os horários da medicação.
+Com os objetivos gerais de controlar medicamentos e lembrar usuários sobre os horários da medicação.
 
 ## Análise técnica
 
 ### Descrição do ambiente técnico
 
-O sistema é composto por uma app desenvolvido em flutter e disponibilizado hibridamente para Android e IOS.
+O sistema é composto por um app desenvolvido em flutter e disponibilizado hibridamente para Android e IOS.
 A persistência local é realizada por meio de banco de dados relacional utilizando a biblioteca SQFlite. 
 
 
 ### Diagrama de Classes de Domínio
 
+A ideia do diagrama de classes de domínio é fornecer um documentação enxuta que será utilizada como ponto de partida para o desenvolvimento do projeto, sem a preocupação com os demais detalhes da UML.
+
 ![diagrama](./docs/diagrama_classes_dominio.png)
 
 ### Prototipação
+
+O modelo de prototipação escolhido foi o mockup de alta fidelidade com as principais telas da aplicação. Conjuntamente, foi elaborado um mini style guide para guiar a implementação da interface. Foram observados principalmente aspectos de legibilidade do texto aplicando conceitos de acessibilidade AAA da WCAG com foco em pessoas idosas.
+
 
 ![Prototipação](./docs/prototipacao.png)
 
