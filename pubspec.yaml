@@ -37,6 +37,9 @@ dependencies:
   sqflite:
   flutter_svg:
   intl:
+  google_fonts: ^6.2.1
+  firebase_core: ^4.2.0
+  cloud_firestore: ^6.0.3
 
 dev_dependencies:
   flutter_test:

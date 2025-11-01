@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_medi/ui/initial/base_screen.dart';
 import 'package:flutter_app_medi/ui/medicine/medicine_form_screen.dart';
@@ -5,9 +6,21 @@ import 'package:flutter_app_medi/ui/medicine/medicine_list_screen.dart';
 import 'package:flutter_app_medi/ui/medicine/medicine_screen.dart';
 import 'package:flutter_app_medi/ui/schedule/schedule_base_screen.dart';
 import 'package:flutter_app_medi/ui/user/user_screen.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-void main() {
+
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
+
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  firestore.collection("teste").doc("testando o firebase").set({"funcionou": "true"});
 }
 
 class MyApp extends StatelessWidget {
@@ -18,7 +31,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        fontFamily: 'Roboto',
+        textTheme: GoogleFonts.robotoTextTheme(),
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),

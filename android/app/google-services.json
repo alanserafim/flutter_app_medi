@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "911715201343",
+    "project_id": "medi-flutter",
+    "storage_bucket": "medi-flutter.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:911715201343:android:25612e895991168b17e38a",
+        "android_client_info": {
+          "package_name": "com.medi.flutter_app_medi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCcBib2Ab7vcapPhEOESysPh39cS_fRgvo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
