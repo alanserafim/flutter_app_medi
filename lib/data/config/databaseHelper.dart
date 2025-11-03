@@ -1,6 +1,6 @@
-import 'package:flutter_app_medi/data/repositories/dose_repository.dart';
-import 'package:flutter_app_medi/data/repositories/medicine_repository.dart';
-import 'package:flutter_app_medi/data/repositories/user_repository.dart';
+import 'package:flutter_app_medi/data/repositories/sqflite/dose_repository.dart';
+import 'package:flutter_app_medi/data/repositories/sqflite/medicine_repository.dart';
+import 'package:flutter_app_medi/data/repositories/sqflite/user_repository.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app_medi/data/repositories/user_repository.dart';
+import 'package:flutter_app_medi/data/repositories/sqflite/user_repository.dart';
 import 'package:flutter_svg/svg.dart';
 
 class UserScreen extends StatefulWidget {

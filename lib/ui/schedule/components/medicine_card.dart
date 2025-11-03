@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../../../data/repositories/dose_repository.dart';
+import '../../../data/repositories/sqflite/dose_repository.dart';
 
 class MedicineCard extends StatefulWidget {
   final DateTime time;

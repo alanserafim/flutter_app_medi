@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
-import '../../domain/models/dose.dart';
-import '../config/databaseHelper.dart';
+import '../../../domain/models/dose.dart';
+import '../../config/databaseHelper.dart';
 
 class DoseRepository {
 

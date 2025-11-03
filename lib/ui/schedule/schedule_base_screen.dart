@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app_medi/data/repositories/dose_repository.dart';
+import 'package:flutter_app_medi/data/repositories/sqflite/dose_repository.dart';
 import 'package:flutter_app_medi/domain/models/dose.dart';
 import 'package:flutter_svg/svg.dart';
 import 'components/medicine_card.dart';

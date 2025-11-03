@@ -1,7 +1,7 @@
 import 'package:sqflite/sqflite.dart';
 
-import '../../domain/models/user.dart';
-import '../config/databaseHelper.dart';
+import '../../../domain/models/user.dart';
+import '../../config/databaseHelper.dart';
 
 class UserRepository {
   static const String _nome = 'nome';

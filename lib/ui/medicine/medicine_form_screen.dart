@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app_medi/data/repositories/dose_repository.dart';
-import 'package:flutter_app_medi/data/repositories/medicine_repository.dart';
+import 'package:flutter_app_medi/data/repositories/sqflite/dose_repository.dart';
+import 'package:flutter_app_medi/data/repositories/sqflite/medicine_repository.dart';
 import 'package:flutter_app_medi/domain/models/medicine.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';

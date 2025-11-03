@@ -1,7 +1,7 @@
 import 'package:sqflite/sqflite.dart';
 
-import '../../domain/models/medicine.dart';
-import '../config/databaseHelper.dart';
+import '../../../domain/models/medicine.dart';
+import '../../config/databaseHelper.dart';
 
 class MedicineRepository {
   static const String _nome = 'nome';
