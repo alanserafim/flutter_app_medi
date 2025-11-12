@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app_medi/data/repositories/firestore/dose_doc.dart';
 import 'package:flutter_app_medi/data/repositories/sqflite/dose_repository.dart';
 import 'package:flutter_app_medi/data/repositories/sqflite/medicine_repository.dart';
-import 'package:flutter_app_medi/domain/models/medicine.dart';
+
+import '../../data/repositories/firestore/medicine_doc.dart';
 
 class MedicineListScreen extends StatefulWidget {
   const MedicineListScreen({super.key});
@@ -11,8 +13,7 @@ class MedicineListScreen extends StatefulWidget {
 }
 
 class _MedicineListScreenState extends State<MedicineListScreen> {
-
-  Future<void> _showMyDialog(String medicineName) async {
+  Future<void> _showMyDialog(String medicineName, String medicineId) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
@@ -27,8 +28,8 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
             ),
             TextButton(
               onPressed: () async {
-                await MedicineRepository().delete(medicineName);
-                await DoseRepository().delete(medicineName);
+                await MedicineDocService().delete(medicineId);
+                await DoseService().deleteByName(medicineName);
                 Navigator.pop(context);
                 setState(() {});
               },
@@ -45,9 +46,9 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
     return Scaffold(
       appBar: AppBar(title: Text("Medicamentos Cadastrados")),
       body: FutureBuilder(
-        future: MedicineRepository().findAll(),
+        future: MedicineDocService().findAll(),
         builder: (context, snapshot) {
-          List<Medicine>? items = snapshot.data;
+          List<MedicineDoc>? items = snapshot.data;
           switch (snapshot.connectionState) {
             case ConnectionState.none:
               return Center(
@@ -73,7 +74,7 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
                   return ListView.builder(
                     itemCount: items.length,
                     itemBuilder: (BuildContext context, int index) {
-                      final Medicine medicine = items[index];
+                      final MedicineDoc medicine = items[index];
                       return Container(
                         padding: const EdgeInsets.all(16.0),
                         margin: const EdgeInsets.only(top: 6, bottom: 6),
@@ -94,7 +95,7 @@ class _MedicineListScreenState extends State<MedicineListScreen> {
                             Text(medicine.name),
                             IconButton(
                               onPressed: () {
-                                _showMyDialog(medicine.name);
+                                _showMyDialog(medicine.name, medicine.id);
                               },
                               icon: Icon(Icons.delete, color: Colors.red),
                             ),

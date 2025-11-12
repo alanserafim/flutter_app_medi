@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app_medi/data/repositories/firestore/dose_doc.dart';
 import 'package:intl/intl.dart';
 
 import '../../../data/repositories/sqflite/dose_repository.dart';
 
 class MedicineCard extends StatefulWidget {
+  final String id;
   final DateTime time;
   final String dosage;
   final String name;
@@ -13,6 +15,7 @@ class MedicineCard extends StatefulWidget {
 
   const MedicineCard({
     super.key,
+    required this.id,
     required this.time,
     required this.dosage,
     required this.name,
@@ -27,6 +30,7 @@ class MedicineCard extends StatefulWidget {
 
 class _MedicineCardState extends State<MedicineCard> {
   bool _isTaken = false;
+  DoseService doseService = DoseService();
 
   @override
   void initState() {
@@ -53,14 +57,11 @@ class _MedicineCardState extends State<MedicineCard> {
           actions: <Widget>[
             TextButton(
               onPressed: () async {
+                print(widget.id);
                 if (widget.status == "NOT_TAKEN") {
-                  var dose = await DoseRepository().findByNameAndDayTime(
-                    widget.name,
-                    widget.time,
-                  );
-                  print(dose.toString());
-                  dose[0].status = "TAKEN";
-                  await DoseRepository().update(dose[0]);
+                  var dose = await doseService.findById(widget.id);
+                  dose.data.status = "TAKEN";
+                  await doseService.update(dose);
                   setState(() {
                     _isTaken = true;
                   });
@@ -75,12 +76,10 @@ class _MedicineCardState extends State<MedicineCard> {
             TextButton(
               onPressed: () async {
                 if (widget.status == "TAKEN") {
-                  var dose = await DoseRepository().findByNameAndDayTime(
-                    widget.name,
-                    widget.time,
-                  );
-                  dose[0].status = "NOT_TAKEN";
-                  await DoseRepository().update(dose[0]);
+                  print(widget.id);
+                  var dose = await doseService.findById(widget.id);
+                  dose.data.status = "NOT_TAKEN";
+                  await doseService.update(dose);
                   setState(() {
                     _isTaken = false;
                   });

@@ -8,6 +8,11 @@ class Dose {
   IconData icon;
   String status;
 
+  @override
+  String toString() {
+    return 'Dose{name: $name, dayTime: $dayTime, dosage: $dosage, alias: $alias, icon: $icon, status: $status}';
+  }
+
   Dose({
     required this.name,
     required this.dayTime,

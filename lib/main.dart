@@ -18,9 +18,6 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(const MyApp());
-
-  FirebaseFirestore firestore = FirebaseFirestore.instance;
-  firestore.collection("teste").doc("testando o firebase").set({"funcionou": "true"});
 }
 
 class MyApp extends StatelessWidget {

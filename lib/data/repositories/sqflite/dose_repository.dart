@@ -42,6 +42,7 @@ class DoseRepository {
     );
     return toList(result);
   }
+
   Future<List<Dose>> findByNameAndDayTime(String name, DateTime dayTime) async {
     print("Acessando find - DoseRepository ");
     final Database bancoDeDados = await _dbHelper.database;

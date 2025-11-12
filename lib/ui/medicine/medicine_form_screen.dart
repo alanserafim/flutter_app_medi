@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app_medi/data/repositories/firestore/dose_doc.dart';
+import 'package:flutter_app_medi/data/repositories/firestore/medicine_doc.dart';
 import 'package:flutter_app_medi/data/repositories/sqflite/dose_repository.dart';
 import 'package:flutter_app_medi/data/repositories/sqflite/medicine_repository.dart';
 import 'package:flutter_app_medi/domain/models/medicine.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
 
 import '../../domain/models/dose.dart';
 
@@ -15,21 +18,27 @@ class MedicineFormScreen extends StatefulWidget {
 }
 
 class _MedicineScreenState extends State<MedicineFormScreen> {
+  MedicineDocService medicineService = MedicineDocService();
+  DoseService doseService = DoseService();
 
-  List<Dose> generateDoses(Medicine medicine) {
+  List<DoseDoc> generateDoses(MedicineDoc medicine) {
     print("Método Generate Doses");
     int totalDoses = medicine.treatmentDuration * medicine.dailyFrequency;
-    List<Dose> doses = [];
+    List<DoseDoc> doses = [];
     for (int i = 0; i < totalDoses; i++) {
       DateTime dateTimeDose = medicine.firstDoseTime.add(
           Duration(minutes: medicine.doseInterval * i));
-      doses.add(Dose(
+      Dose dose = Dose(
           name: medicine.name,
           dayTime: dateTimeDose,
           dosage: medicine.dosage,
           alias: medicine.alias,
           icon: Icons.vaccines,
           status: "NOT_TAKEN"
+      );
+      doses.add(DoseDoc(
+          id: Uuid().v1(),
+          data: dose
       ));
     }
     return doses;
@@ -300,7 +309,9 @@ class _MedicineScreenState extends State<MedicineFormScreen> {
                     ElevatedButton(
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
-                          Medicine medicine = Medicine(
+                          String id = Uuid().v1();
+                          MedicineDoc medicine = MedicineDoc(
+                              id: id,
                               name: nameController.text,
                               alias: aliasController.text,
                               type: typeController.text,
@@ -316,18 +327,21 @@ class _MedicineScreenState extends State<MedicineFormScreen> {
                               treatmentDuration: int.parse(
                                   treatmentDurationController.text)
                           );
-                          await MedicineRepository().save(medicine);
+                          await medicineService.save(medicine: medicine, id: id);
                           List doseList = generateDoses(medicine);
-                          var doseExists = await DoseRepository().find(
+                          for (var dose in doseList) {
+                            await doseService.save(dose.id, dose.data);
+                          }
+                          var doseExists = await doseService.findByName(
                               medicine.name);
                           if (doseExists.isEmpty) {
                             for (var dose in doseList) {
-                              await DoseRepository().save(dose);
+                              await doseService.save(dose.id, dose.data);
                             }
                           } else {
-                            await DoseRepository().delete(medicine.name);
+                            await doseService.deleteByName(medicine.name);
                             for (var dose in doseList) {
-                              await DoseRepository().save(dose);
+                              await doseService.save(dose.id, dose.data);
                             }
                           }
                           ScaffoldMessenger.of(context).showSnackBar(

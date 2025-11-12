@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app_medi/data/repositories/sqflite/dose_repository.dart';
-import 'package:flutter_app_medi/domain/models/dose.dart';
+import 'package:flutter_app_medi/data/repositories/firestore/dose_doc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'components/medicine_card.dart';
 
@@ -14,6 +13,7 @@ class ScheduleBaseScreen extends StatefulWidget {
 class _ScheduleBaseScreenState extends State<ScheduleBaseScreen> {
   String _selectedFilter = "ALL";
   int _selectedIndex = 0;
+  //DoseService doseService = DoseService();
 
   void _onItemTapped(int index) {
     setState(() {
@@ -92,10 +92,10 @@ class _ScheduleBaseScreenState extends State<ScheduleBaseScreen> {
               ],
             ),
             Expanded(
-              child: FutureBuilder<List<Dose>>(
-                future: DoseRepository().findAll(),
+              child: FutureBuilder<List<DoseDoc>>(
+                future: DoseService().findAll(),
                 builder: (context, snapshot) {
-                  List<Dose>? items = snapshot.data;
+                  List<DoseDoc>? items = snapshot.data;
                   switch (snapshot.connectionState) {
                     case ConnectionState.none:
                       return Center(
@@ -127,24 +127,25 @@ class _ScheduleBaseScreenState extends State<ScheduleBaseScreen> {
                     case ConnectionState.done:
                       if (snapshot.hasData && items != null) {
                         if (items.isNotEmpty) {
-                          items.sort((a, b) => a.dayTime.compareTo(b.dayTime));
-                          List<Dose> filteredItems =
+                          items.sort((a, b) => a.data.dayTime.compareTo(b.data.dayTime));
+                          List<DoseDoc> filteredItems =
                           items.where((dose) {
                             if (_selectedFilter == "ALL") return true;
-                            return dose.status == _selectedFilter;
+                            return dose.data.status == _selectedFilter;
                           }).toList();
                           if (filteredItems.isNotEmpty) {
                             return ListView.builder(
                               itemCount: filteredItems.length,
                               itemBuilder: (BuildContext context, int index) {
-                                final Dose dose = filteredItems[index];
+                                final DoseDoc dose = filteredItems[index];
                                 return MedicineCard(
-                                  name: dose.name,
-                                  time: dose.dayTime,
-                                  dosage: dose.dosage,
-                                  description: dose.alias,
-                                  icon: dose.icon,
-                                  status: dose.status,
+                                  id: dose.id,
+                                  name: dose.data.name,
+                                  time: dose.data.dayTime,
+                                  dosage: dose.data.dosage,
+                                  description: dose.data.alias,
+                                  icon: dose.data.icon,
+                                  status: dose.data.status,
                                 );
                               },
                             );
