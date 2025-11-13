@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app_medi/data/repositories/firestore/dose_doc.dart';
-import 'package:flutter_app_medi/data/repositories/sqflite/dose_repository.dart';
-import 'package:flutter_app_medi/data/repositories/sqflite/medicine_repository.dart';
-
 import '../../data/repositories/firestore/medicine_doc.dart';
 
 class MedicineListScreen extends StatefulWidget {

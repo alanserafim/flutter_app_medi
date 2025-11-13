@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
-import '../../data/repositories/firestore/medicine_doc.dart';
-
 class MedicineScreen extends StatefulWidget {
   const MedicineScreen({super.key});
 
@@ -11,20 +9,6 @@ class MedicineScreen extends StatefulWidget {
 }
 
 class _MedicineScreenState extends State<MedicineScreen> {
-
-  // List<MedicineDoc> medicineList = [];
-  // MedicineDocService medicineDocService = MedicineDocService();
-  // @override
-  // void initState() {
-  //   refresh();
-  //   super.initState();
-  // }
-  // refresh() async {
-  //   List<MedicineDoc> medicines = await medicineDocService.findAll();
-  //   setState(() {
-  //     medicineList = medicines;
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {

@@ -38,75 +38,114 @@ class DoseService {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   Future<List<DoseDoc>> findAll() async {
-    print("Método findAll");
-    List<DoseDoc> dosesList = [];
-    QuerySnapshot<Map<String, dynamic>> snapshot =
-        await firestore.collection("doses").get();
-    for (var doc in snapshot.docs) {
-      DoseDoc dose = DoseDoc(id: doc.id, data: fromMap(doc.data()));
-      dosesList.add(dose);
+    debugPrint("metodo DoseService.findAll");
+    try {
+      final snapshot = await firestore.collection("doses").get();
+      return snapshot.docs.map((doc) {
+        return DoseDoc(id: doc.id, data: fromMap(doc.data()));
+      }).toList();
+    } on FirebaseException catch (e) {
+      debugPrint("Firebase error in findAll: '${e.message}'");
+      rethrow;
+    } catch (e, stack) {
+      debugPrint("Unexpected error in findAll: $e");
+      debugPrint(stack.toString());
+      rethrow;
     }
-    //print(dosesList);
-    return dosesList;
   }
 
-  //method findById
   Future<DoseDoc> findById(String id) async {
-    print("Método findById");
-    DocumentSnapshot<Map<String, dynamic>> snapshot =
-      await firestore
-        .collection("doses")
-        .doc(id)
-        .get();
-    DoseDoc dose = DoseDoc(
+    debugPrint("metodo DoseService.findById");
+    try {
+      final snapshot = await firestore.collection("doses").doc(id).get();
+      if (!snapshot.exists) {
+        throw Exception("Dose não encontrada com id: $id");
+      }
+      return DoseDoc(
         id: snapshot.id,
-        data: fromMap(snapshot.data()!)
-    );
-    print(dose);
-    return dose;
+        data: fromMap(snapshot.data()!),
+      );
+    } on FirebaseException catch (e) {
+      debugPrint("Firebase error in findById: '${e.message}'");
+      rethrow;
+    } catch (e, stack) {
+      debugPrint("Unexpected error in findById: $e");
+      debugPrint(stack.toString());
+      rethrow;
+    }
   }
-
 
   Future<List<DoseDoc>> findByName(String name) async {
-    print("Método findAll");
-    List<DoseDoc> dosesFilteredList = [];
-    QuerySnapshot<Map<String, dynamic>> snapshot =
-        await firestore
-            .collection("doses")
-            .where("name", isEqualTo: name)
-            .get();
-
-    for (var doc in snapshot.docs) {
-      DoseDoc dose = DoseDoc(id: doc.id, data: fromMap(doc.data()));
-      dosesFilteredList.add(dose);
+    debugPrint("método DoseService.findByName");
+    try {
+      final snapshot = await firestore
+          .collection("doses")
+          .where("name", isEqualTo: name)
+          .get();
+      return snapshot.docs.map((doc) {
+        return DoseDoc(id: doc.id, data: fromMap(doc.data()));
+      }).toList();
+    } on FirebaseException catch (e) {
+      debugPrint("Firebase error in findByName: '${e.message}'");
+      rethrow;
+    } catch (e, stack) {
+      debugPrint("Unexpected error in findByName: $e");
+      debugPrint(stack.toString());
+      rethrow;
     }
-    print(dosesFilteredList);
-    return dosesFilteredList;
   }
 
   Future<void> deleteByName(String name) async {
-    print("Método delete");
-    QuerySnapshot<Map<String, dynamic>> snapshot =
-        await firestore
-            .collection("doses")
-            .where("name", isEqualTo: name)
-            .get();
-    for (var doc in snapshot.docs) {
-      await firestore.collection("doses").doc(doc.id).delete();
+    debugPrint("método DoseService.deleteByName");
+    try {
+      final snapshot = await firestore
+          .collection("doses")
+          .where("name", isEqualTo: name)
+          .get();
+
+      for (var doc in snapshot.docs) {
+        await firestore.collection("doses").doc(doc.id).delete();
+      }
+    } on FirebaseException catch (e) {
+      debugPrint("Firebase error in deleteByName: '${e.message}'");
+      rethrow;
+    } catch (e, stack) {
+      debugPrint("Unexpected error in deleteByName: $e");
+      debugPrint(stack.toString());
+      rethrow;
     }
   }
 
   Future<void> update(DoseDoc dose) async {
-    print("Método update");
-    await firestore
-        .collection("doses")
-        .doc(dose.id)
-        .update(toMap(dose.data));
+    debugPrint("método DoseService.update");
+    try {
+      await firestore
+          .collection("doses")
+          .doc(dose.id)
+          .update(toMap(dose.data));
+    } on FirebaseException catch (e) {
+      debugPrint("Firebase error in update: '${e.message}'");
+      rethrow;
+    } catch (e, stack) {
+      debugPrint("Unexpected error in update: $e");
+      debugPrint(stack.toString());
+      rethrow;
+    }
   }
 
   Future<DoseDoc> save(String id, Dose dose) async {
-    print("Método save");
-    await firestore.collection("doses").doc(id).set(toMap(dose));
-    return DoseDoc(id: id, data: dose);
+    debugPrint("método DoseService.save");
+    try {
+      await firestore.collection("doses").doc(id).set(toMap(dose));
+      return DoseDoc(id: id, data: dose);
+    } on FirebaseException catch (e) {
+      debugPrint("Firebase error in save: '${e.message}'");
+      rethrow;
+    } catch (e, stack) {
+      debugPrint("Unexpected error in save: $e");
+      debugPrint(stack.toString());
+      rethrow;
+    }
   }
+
 }

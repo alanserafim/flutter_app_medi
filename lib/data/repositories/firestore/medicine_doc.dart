@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 
 class MedicineDoc {
   String id;
@@ -63,47 +64,88 @@ class MedicineDocService {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   Future<List<MedicineDoc>> findAll() async {
-    //print("Método findAll");
-    List<MedicineDoc> medicinesList = [];
-    QuerySnapshot<Map<String, dynamic>> snapshot =
-        await firestore.collection("medicines").get();
-    for (var doc in snapshot.docs) {
-      MedicineDoc medicine = MedicineDoc.fromMap(doc.data(), doc.id);
-      medicinesList.add(medicine);
+    debugPrint('metodo MedicineDocService.findAll');
+    try {
+      final snapshot = await firestore.collection("medicines").get();
+      return snapshot.docs.map((doc) {
+        return MedicineDoc.fromMap(doc.data(), doc.id);
+      }).toList();
+    } on FirebaseException catch (e) {
+      debugPrint('Firebase error while fetching medicines: \'${e.message}\'');
+      rethrow;
+    } catch (e, stack) {
+      debugPrint('Unexpected error while fetching medicines: $e');
+      debugPrint(stack.toString());
+      rethrow;
     }
-    //print(medicinesList);
-    return medicinesList;
   }
 
   Future<MedicineDoc> find(String id) async {
-    print("Método find");
-    QuerySnapshot<Map<String, dynamic>> snapshot =
-        await firestore
-            .collection("medicines")
-            .where("id", isEqualTo: id)
-            .get();
-    MedicineDoc medicine = MedicineDoc.fromMap(
-      snapshot.docs.first.data(),
-      snapshot.docs.first.id,
-    );
-    print(medicine);
-    return medicine;
+    debugPrint('metodo MedicineDocService.find');
+    try {
+      final snapshot =
+          await firestore
+              .collection("medicines")
+              .where("id", isEqualTo: id)
+              .get();
+
+      if (snapshot.docs.isEmpty) {
+        throw Exception("Nenhum medicamento encontrado com o id: $id");
+      }
+      final doc = snapshot.docs.first;
+      return MedicineDoc.fromMap(doc.data(), doc.id);
+    } on FirebaseException catch (e) {
+      debugPrint("Firebase error while fetching medicine: '${e.message}'");
+      rethrow;
+    } catch (e, stack) {
+      debugPrint("Unexpected error while fetching medicine: $e");
+      debugPrint(stack.toString());
+      rethrow;
+    }
   }
 
-  save({required String id, required MedicineDoc medicine}) {
-    print("Método save");
-    firestore.collection("medicines").doc(id).set(medicine.toMap());
+  Future<void> save({required String id, required MedicineDoc medicine}) async {
+    debugPrint('metodo MedicineDocService.save');
+    try {
+      await firestore.collection("medicines").doc(id).set(medicine.toMap());
+    } on FirebaseException catch (e) {
+      debugPrint("Firebase error while saving medicine: '${e.message}'");
+      rethrow;
+    } catch (e, stack) {
+      debugPrint("Unexpected error while saving medicine: $e");
+      debugPrint(stack.toString());
+      rethrow;
+    }
   }
 
-  delete(String id) {
-    print("Método delete");
-    print(id);
-    firestore.collection("medicines").doc(id).delete();
+  Future<void> delete(String id) async {
+    debugPrint('metodo MedicineDocService.delete');
+    try {
+      await firestore.collection("medicines").doc(id).delete();
+    } on FirebaseException catch (e) {
+      debugPrint("Firebase error while deleting medicine: '${e.message}'");
+      rethrow;
+    } catch (e, stack) {
+      debugPrint("Unexpected error while deleting medicine: $e");
+      debugPrint(stack.toString());
+      rethrow;
+    }
   }
 
-  update(MedicineDoc medicine) {
-    print("Método update");
-    firestore.collection("medicines").doc(medicine.id).update(medicine.toMap());
+  Future<void> update(MedicineDoc medicine) async {
+    debugPrint('metodo MedicineDocService.update');
+    try {
+      await firestore
+          .collection("medicines")
+          .doc(medicine.id)
+          .update(medicine.toMap());
+    } on FirebaseException catch (e) {
+      debugPrint("Firebase error while updating medicine: '${e.message}'");
+      rethrow;
+    } catch (e, stack) {
+      debugPrint("Unexpected error while updating medicine: $e");
+      debugPrint(stack.toString());
+      rethrow;
+    }
   }
 }
-

@@ -13,7 +13,6 @@ class ScheduleBaseScreen extends StatefulWidget {
 class _ScheduleBaseScreenState extends State<ScheduleBaseScreen> {
   String _selectedFilter = "ALL";
   int _selectedIndex = 0;
-  //DoseService doseService = DoseService();
 
   void _onItemTapped(int index) {
     setState(() {

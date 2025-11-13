@@ -57,7 +57,6 @@ class _MedicineCardState extends State<MedicineCard> {
           actions: <Widget>[
             TextButton(
               onPressed: () async {
-                print(widget.id);
                 if (widget.status == "NOT_TAKEN") {
                   var dose = await doseService.findById(widget.id);
                   dose.data.status = "TAKEN";
@@ -76,7 +75,6 @@ class _MedicineCardState extends State<MedicineCard> {
             TextButton(
               onPressed: () async {
                 if (widget.status == "TAKEN") {
-                  print(widget.id);
                   var dose = await doseService.findById(widget.id);
                   dose.data.status = "NOT_TAKEN";
                   await doseService.update(dose);
