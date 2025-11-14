@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app_medi/data/repositories/sqflite/user_repository.dart';
 import 'package:flutter_app_medi/domain/models/user.dart';
 
+import '../../authentication/services/auth_service.dart';
+
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key, required this.onBack});
 
@@ -17,21 +19,7 @@ class _SignupScreenState extends State<SignupScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-
-  Future handleSignUp(User user) async {
-    var userExits = await UserRepository().find(user.email);
-    if (userExits.isNotEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Usuário ja existe na base de dados')),
-      );
-    } else {
-      await UserRepository().save(user);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('cadastro efetuado com sucesso')),
-      );
-      Navigator.pushNamed(context, '/schedule');
-    }
-  }
+  AuthService authService = AuthService();
 
   @override
   Widget build(BuildContext context) {
@@ -160,5 +148,25 @@ class _SignupScreenState extends State<SignupScreen> {
         ),
       ),
     );
+  }
+
+  Future handleSignUp(User user) async {
+    String? erro = await authService.userSignUp(email: user.email, password: user.password, name: user.name);
+    if(erro == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('cadastro efetuado com sucesso'),
+              backgroundColor: Colors.green,
+          ),
+      );
+      Navigator.pushNamed(context, '/schedule');
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(erro),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app_medi/authentication/services/auth_service.dart';
 import 'package:flutter_app_medi/data/repositories/firestore/dose_doc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'components/medicine_card.dart';
@@ -13,6 +14,7 @@ class ScheduleBaseScreen extends StatefulWidget {
 class _ScheduleBaseScreenState extends State<ScheduleBaseScreen> {
   String _selectedFilter = "ALL";
   int _selectedIndex = 0;
+  AuthService authService = AuthService();
 
   void _onItemTapped(int index) {
     setState(() {
@@ -49,6 +51,13 @@ class _ScheduleBaseScreenState extends State<ScheduleBaseScreen> {
                     setState(() {});
                   },
                   icon: Icon(Icons.refresh),
+                ),
+                IconButton(
+                  onPressed: () {
+                    authService.signOut();
+                    Navigator.pushNamed(context, '/');
+                  },
+                  icon: Icon(Icons.exit_to_app_rounded),
                 ),
               ],
             ),

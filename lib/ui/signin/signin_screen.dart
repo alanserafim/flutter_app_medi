@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app_medi/authentication/services/auth_service.dart';
 import 'package:flutter_app_medi/data/repositories/sqflite/user_repository.dart';
 
 class SigninScreen extends StatefulWidget {
@@ -11,37 +12,10 @@ class SigninScreen extends StatefulWidget {
 }
 
 class _SigninScreenState extends State<SigninScreen> {
-
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-
-  Future handeSignin(email, password) async {
-    List user = await UserRepository().find(email);
-    if (user.isNotEmpty) {
-      if(user[0].password == password) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Login efetuado com sucesso'),
-          ),
-        );
-        Navigator.pushNamed(context, '/schedule');
-      }  else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Usuário ou senha incorreta'),
-          ),
-        );
-      }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Usuário ou senha incorreta'),
-        ),
-      );
-    }
-
-  }
+  AuthService authService = AuthService();
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +51,7 @@ class _SigninScreenState extends State<SigninScreen> {
                 ),
               ],
             ),
-            SizedBox(height: 16),
+            SizedBox(height: 8),
             Container(
               alignment: Alignment.center,
               padding: const EdgeInsets.all(10),
@@ -93,16 +67,18 @@ class _SigninScreenState extends State<SigninScreen> {
                       if (value!.isEmpty) {
                         return 'O campo e-mail dever ser preenchido';
                       }
-                      final emailRegex = RegExp(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$');
+                      final emailRegex = RegExp(
+                        r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$',
+                      );
                       if (!emailRegex.hasMatch(value)) {
-                          return 'Por favor, insira um email válido.';
+                        return 'Por favor, insira um email válido.';
                       }
                       return null;
                     },
                     decoration: InputDecoration(labelText: 'e-mail'),
                     style: TextStyle(fontSize: 20),
                   ),
-                  SizedBox(height: 16),
+                  SizedBox(height: 8),
                   TextFormField(
                     controller: passwordController,
                     validator: (value) {
@@ -114,23 +90,26 @@ class _SigninScreenState extends State<SigninScreen> {
                     style: TextStyle(fontSize: 20),
                     decoration: InputDecoration(labelText: 'senha'),
                   ),
-                  SizedBox(height: 16),
+                  SizedBox(height: 8),
                 ],
               ),
             ),
-            SizedBox(height: 16),
+            SizedBox(height: 8),
             SizedBox(
               width: 250,
               height: 70,
               child: ElevatedButton(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    await handeSignin(emailController.text, passwordController.text);
+                    await handeSignin(
+                      emailController.text,
+                      passwordController.text,
+                    );
                   }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFFE8BB6C),
-                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 5),
                 ),
                 child: Text(
                   'ACESSAR',
@@ -142,9 +121,79 @@ class _SigninScreenState extends State<SigninScreen> {
                 ),
               ),
             ),
+            TextButton(
+              onPressed: () {
+                handleForgotPassword();
+              },
+              child: Text(
+                'Esqueceu a senha?',
+                style: TextStyle(color: Colors.white, fontSize: 24),
+              ),
+            ),
           ],
         ),
       ),
     );
+  }
+
+  Future handeSignin(email, password) async {
+    String? erro = await authService.userSignIn(
+      email: email,
+      password: password,
+    );
+    if (erro == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Login efetuado com sucesso'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      Navigator.pushNamed(context, '/schedule');
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(erro), backgroundColor: Colors.red),
+      );
+    }
+  }
+
+  handleForgotPassword() async {
+    String email = emailController.text;
+    showDialog(
+      context: context,
+      builder: (context) {
+        TextEditingController redefinicaoController = TextEditingController(
+          text: email,
+        );
+        return AlertDialog(
+          title: Text('Esqueceu a senha?'),
+          content: TextFormField(
+            controller: redefinicaoController,
+            decoration: InputDecoration(label: Text('Confirme seu e-mail')),
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(32)),
+          ),
+          actions: [
+            TextButton(onPressed: () async {
+              String? erro = await authService.redefinePassword(email: redefinicaoController.text);
+              if (erro == null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('e-mail de redefinição enviado!'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(erro), backgroundColor: Colors.red),
+                );
+              }
+              Navigator.pop(context);
+            }, child: (Text("Redefinir senha"))),
+          ],
+        );
+      },
+    );
+
   }
 }
