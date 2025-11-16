@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../../domain/models/dose.dart';
@@ -34,13 +35,19 @@ Dose fromMap(Map<String, dynamic> map) => Dose(
   status: map['status'] as String? ?? '',
 );
 
+
 class DoseService {
+  String uid = FirebaseAuth.instance.currentUser!.uid;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   Future<List<DoseDoc>> findAll() async {
     debugPrint("metodo DoseService.findAll");
     try {
-      final snapshot = await firestore.collection("doses").get();
+      final snapshot = await firestore
+          .collection(uid)
+          .doc('data')
+          .collection("doses")
+          .get();
       return snapshot.docs.map((doc) {
         return DoseDoc(id: doc.id, data: fromMap(doc.data()));
       }).toList();
@@ -57,7 +64,12 @@ class DoseService {
   Future<DoseDoc> findById(String id) async {
     debugPrint("metodo DoseService.findById");
     try {
-      final snapshot = await firestore.collection("doses").doc(id).get();
+      final snapshot = await firestore
+          .collection(uid)
+          .doc('data')
+          .collection("doses")
+          .doc(id)
+          .get();
       if (!snapshot.exists) {
         throw Exception("Dose não encontrada com id: $id");
       }
@@ -79,6 +91,8 @@ class DoseService {
     debugPrint("método DoseService.findByName");
     try {
       final snapshot = await firestore
+          .collection(uid)
+          .doc('data')
           .collection("doses")
           .where("name", isEqualTo: name)
           .get();
@@ -99,6 +113,8 @@ class DoseService {
     debugPrint("método DoseService.deleteByName");
     try {
       final snapshot = await firestore
+          .collection(uid)
+          .doc('data')
           .collection("doses")
           .where("name", isEqualTo: name)
           .get();
@@ -120,6 +136,8 @@ class DoseService {
     debugPrint("método DoseService.update");
     try {
       await firestore
+          .collection(uid)
+          .doc('data')
           .collection("doses")
           .doc(dose.id)
           .update(toMap(dose.data));
@@ -136,7 +154,12 @@ class DoseService {
   Future<DoseDoc> save(String id, Dose dose) async {
     debugPrint("método DoseService.save");
     try {
-      await firestore.collection("doses").doc(id).set(toMap(dose));
+      await firestore
+          .collection(uid)
+          .doc('data')
+          .collection("doses")
+          .doc(id)
+          .set(toMap(dose));
       return DoseDoc(id: id, data: dose);
     } on FirebaseException catch (e) {
       debugPrint("Firebase error in save: '${e.message}'");

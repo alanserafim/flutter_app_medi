@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class MedicineDoc {
@@ -61,12 +62,16 @@ class MedicineDoc {
 }
 
 class MedicineDocService {
+  String uid = FirebaseAuth.instance.currentUser!.uid;
   FirebaseFirestore firestore = FirebaseFirestore.instance;
-
   Future<List<MedicineDoc>> findAll() async {
     debugPrint('metodo MedicineDocService.findAll');
     try {
-      final snapshot = await firestore.collection("medicines").get();
+      final snapshot = await firestore
+          .collection(uid)
+          .doc('data')
+          .collection("medicines")
+          .get();
       return snapshot.docs.map((doc) {
         return MedicineDoc.fromMap(doc.data(), doc.id);
       }).toList();
@@ -85,6 +90,8 @@ class MedicineDocService {
     try {
       final snapshot =
           await firestore
+              .collection(uid)
+              .doc('data')
               .collection("medicines")
               .where("id", isEqualTo: id)
               .get();
@@ -107,7 +114,12 @@ class MedicineDocService {
   Future<void> save({required String id, required MedicineDoc medicine}) async {
     debugPrint('metodo MedicineDocService.save');
     try {
-      await firestore.collection("medicines").doc(id).set(medicine.toMap());
+      await firestore
+          .collection(uid)
+          .doc('data')
+          .collection("medicines")
+          .doc(id)
+          .set(medicine.toMap());
     } on FirebaseException catch (e) {
       debugPrint("Firebase error while saving medicine: '${e.message}'");
       rethrow;
@@ -121,7 +133,12 @@ class MedicineDocService {
   Future<void> delete(String id) async {
     debugPrint('metodo MedicineDocService.delete');
     try {
-      await firestore.collection("medicines").doc(id).delete();
+      await firestore
+          .collection(uid)
+          .doc('data')
+          .collection("medicines")
+          .doc(id)
+          .delete();
     } on FirebaseException catch (e) {
       debugPrint("Firebase error while deleting medicine: '${e.message}'");
       rethrow;
@@ -136,6 +153,8 @@ class MedicineDocService {
     debugPrint('metodo MedicineDocService.update');
     try {
       await firestore
+          .collection(uid)
+          .doc('data')
           .collection("medicines")
           .doc(medicine.id)
           .update(medicine.toMap());

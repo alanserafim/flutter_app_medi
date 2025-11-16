@@ -1,11 +1,14 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_medi/authentication/services/auth_service.dart';
 import 'package:flutter_app_medi/data/repositories/firestore/dose_doc.dart';
 import 'package:flutter_svg/svg.dart';
+import '../user/user_screen.dart';
 import 'components/medicine_card.dart';
 
 class ScheduleBaseScreen extends StatefulWidget {
-  const ScheduleBaseScreen({super.key});
+  final User user;
+  const ScheduleBaseScreen({super.key, required this.user});
 
   @override
   State<ScheduleBaseScreen> createState() => _ScheduleBaseScreenState();
@@ -27,7 +30,7 @@ class _ScheduleBaseScreenState extends State<ScheduleBaseScreen> {
           Navigator.pushNamed(context, '/medication');
           break;
         case 2:
-          Navigator.pushNamed(context, '/user');
+          Navigator.push(context, MaterialPageRoute(builder: (context) => UserScreen(user: widget.user)));
           break;
       }
     });
@@ -197,4 +200,8 @@ class _ScheduleBaseScreenState extends State<ScheduleBaseScreen> {
       ),
     );
   }
+
+  setupListeners(){
+  }
+
 }

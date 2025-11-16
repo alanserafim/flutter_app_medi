@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../../domain/models/medi_user.dart';
+
 class AuthService {
   FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
@@ -72,6 +74,40 @@ class AuthService {
     }
     return null;
   }
+
+  Future<String?> removeAccount({required String password}) async {
+    try {
+      await _firebaseAuth.signInWithEmailAndPassword(email: _firebaseAuth.currentUser!.email!, password: password);
+      await _firebaseAuth.currentUser!.delete();
+    } on FirebaseAuthException catch (e) {
+      return e.code;
+    }
+    return null;
+  }
+
+  Future<MediUser?> getUserData() async {
+    if(await _firebaseAuth.currentUser != null){
+      MediUser mediUser = MediUser(
+        name: _firebaseAuth.currentUser!.displayName!,
+        email: _firebaseAuth.currentUser!.email!,
+        photoUrl: _firebaseAuth.currentUser!.photoURL!,
+      );
+      return mediUser;
+    }
+    return null;
+  }
+
+  //update name
+  Future<String?> updateName(String name) async {
+    try {
+      await _firebaseAuth.currentUser!.updateDisplayName(name);
+    } on FirebaseAuthException catch (e) {
+      return e.code;
+    }
+    return null;
+  }
+
+
 
 
 }

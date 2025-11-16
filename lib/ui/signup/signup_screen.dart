@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app_medi/data/repositories/sqflite/user_repository.dart';
-import 'package:flutter_app_medi/domain/models/user.dart';
+import 'package:flutter_app_medi/domain/models/medi_user.dart';
 
 import '../../authentication/services/auth_service.dart';
 
@@ -94,6 +94,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                   SizedBox(height: 8),
                   TextFormField(
+                    obscureText: true,
                     controller: passwordController,
                     validator: (value) {
                       if (value!.isEmpty) {
@@ -122,13 +123,12 @@ class _SignupScreenState extends State<SignupScreen> {
             ElevatedButton(
               onPressed: () async {
                 if (_formKey.currentState!.validate()) {
-                  User user = User(
+                  MediUser mediUser = MediUser(
                     name: nameController.text,
                     email: emailController.text,
-                    password: passwordController.text,
-                    birthDate: "00/00/0000",
+                    photoUrl: null,
                   );
-                  await handleSignUp(user);
+                  await handleSignUp(mediUser, passwordController.text);
                 }
               },
               style: ElevatedButton.styleFrom(
@@ -150,8 +150,8 @@ class _SignupScreenState extends State<SignupScreen> {
     );
   }
 
-  Future handleSignUp(User user) async {
-    String? erro = await authService.userSignUp(email: user.email, password: user.password, name: user.name);
+  Future handleSignUp(MediUser user, String password) async {
+    String? erro = await authService.userSignUp(email: user.email, name: user.name, password: password);
     if(erro == null) {
       ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

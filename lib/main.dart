@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app_medi/storage/storage_screen.dart';
 import 'package:flutter_app_medi/ui/initial/base_screen.dart';
 import 'package:flutter_app_medi/ui/medicine/medicine_form_screen.dart';
 import 'package:flutter_app_medi/ui/medicine/medicine_list_screen.dart';
@@ -33,12 +34,13 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => BaseScreen(),
-        '/schedule': (context) => ScheduleBaseScreen(),
+        '/': (context) => ScreenRouter(),
+        //'/schedule': (context) => ScheduleBaseScreen(),
         '/medication': (context) => MedicineScreen(),
         '/medication/add': (context) => MedicineFormScreen(),
         '/medication/list': (context) => MedicineListScreen(),
-        '/user': (context) => UserScreen(),
+        //'/user': (context) => UserScreen(user: snapshot.data!),
+        '/imageScreen' : (context) => StorageScreen(),
       },
     );
   }
@@ -56,7 +58,7 @@ class ScreenRouter extends StatelessWidget {
             return Center(child: CircularProgressIndicator());
           } else {
             if(snapshot.hasData){
-              return ScheduleBaseScreen();
+              return ScheduleBaseScreen(user: snapshot.data!);
             } else {
               return BaseScreen();
             }

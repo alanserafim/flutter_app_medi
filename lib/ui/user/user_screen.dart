@@ -1,9 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app_medi/data/repositories/sqflite/user_repository.dart';
+import 'package:flutter_app_medi/authentication/services/auth_service.dart';
 import 'package:flutter_svg/svg.dart';
 
 class UserScreen extends StatefulWidget {
-  const UserScreen({super.key});
+  final User user;
+  const UserScreen({super.key, required this.user});
 
   @override
   State<UserScreen> createState() => _UserScreenState();
@@ -11,13 +13,10 @@ class UserScreen extends StatefulWidget {
 
 class _UserScreenState extends State<UserScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _repository = UserRepository();
   bool _isEditable = false;
 
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
-  TextEditingController dataNascimentoController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
 
   @override
   void initState() {
@@ -25,24 +24,12 @@ class _UserScreenState extends State<UserScreen> {
     _loadUserData();
   }
 
-  Future<void> _loadUserData() async {
-    try {
-      final users = await _repository.findAll();
-      if (users.isNotEmpty) {
-        final user = users.first;
-        setState(() {
-          nameController.text = user.name;
-          emailController.text = user.email;
-          dataNascimentoController.text = user.birthDate;
-          passwordController.text = user.password;
-        });
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro ao carregar os dados do usuário: $e')),
-      );
-    }
-  }
+_loadUserData() {
+    setState(() {
+      emailController.text = widget.user.email!;
+      nameController.text = widget.user.displayName!;
+    });
+}
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +39,26 @@ class _UserScreenState extends State<UserScreen> {
         key: _formKey,
         child: Column(
           children: [
-            SvgPicture.asset('assets/images/user.svg', height: 250),
+            Expanded(
+              child: Center(
+                child:
+                  //SvgPicture.asset('assets/images/user.svg', height: 380),
+                  CircleAvatar(
+                      backgroundImage:
+                      (widget.user.photoURL != null)
+                          ? NetworkImage(widget.user.photoURL!)
+                          : null,
+                      maxRadius: 148
+                  ),
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.image),
+              title: Text("Mudar foto de perfil"),
+              onTap: (){
+                Navigator.pushNamed(context, '/imageScreen');
+              },
+            ),
             Expanded(
               child: Container(
                 decoration: BoxDecoration(color: Color(0xFFE8BB6C)),
@@ -80,10 +86,10 @@ class _UserScreenState extends State<UserScreen> {
                             decoration: InputDecoration(labelText: 'nome'),
                             style: TextStyle(fontSize: 20),
                           ),
-                          SizedBox(height: 16),
+                          SizedBox(height: 8),
                           TextFormField(
                             controller: emailController,
-                            enabled: _isEditable,
+                            enabled: false,
                             validator: (value) {
                               if (value!.isEmpty) {
                                 return 'o email deve ser preenchido';
@@ -93,38 +99,37 @@ class _UserScreenState extends State<UserScreen> {
                             decoration: InputDecoration(labelText: 'e-mail'),
                             style: TextStyle(fontSize: 20),
                           ),
-                          SizedBox(height: 16),
-                          SizedBox(height: 16),
-                          TextFormField(
-                            controller: passwordController,
-                            enabled: _isEditable,
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return 'a senha deve ser preenchida';
-                              }
-                              return null;
-                            },
-                            decoration: InputDecoration(labelText: 'senha'),
-                            style: TextStyle(fontSize: 20),
-                          ),
-                          SizedBox(height: 16),
+                          SizedBox(height: 8),
                         ],
                       ),
                     ),
-                    SizedBox(height: 16),
+                    SizedBox(height: 8),
                     ElevatedButton(
                       onPressed: () async {
                         if (_isEditable) {
                           if (_formKey.currentState!.validate()) {
-                            //await UserRepository().update();
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Dados alterados com sucesso'),
-                              ),
-                            );
-                            setState(() {
-                              _isEditable = false;
-                            });
+                            String? erro = await AuthService().updateName(nameController.text);
+                            if(erro == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Dados alterados com sucesso'),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+                              setState(() {
+                                _isEditable = false;
+                              });
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text("Erro ao alterar dados"),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                              setState(() {
+                                _isEditable = false;
+                              });
+                            }
                           }
                         } else {
                           setState(() {
@@ -148,6 +153,27 @@ class _UserScreenState extends State<UserScreen> {
                         ),
                       ),
                     ),
+                    SizedBox(height: 8),
+                    ElevatedButton(
+                      onPressed: () {
+                        showPasswordConfirmationDialog(context: context, email: "email");
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 40,
+                          vertical: 15,
+                        ),
+                      ),
+                      child: Text(
+                        'REMOVER CONTA',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -157,4 +183,69 @@ class _UserScreenState extends State<UserScreen> {
       ),
     );
   }
+}
+
+showPasswordConfirmationDialog({
+  required BuildContext context,
+  required String email
+}){
+  showDialog(
+    context: context,
+    builder: (context){
+      TextEditingController passwordController = TextEditingController();
+      return AlertDialog(
+        title: Text("Deseja remover a conta com o email $email? "),
+        content: SizedBox(
+          height: 175,
+          child: Column(
+            children: [
+              Text("Para confirmar a remoção da conta digite sua senha: "),
+              TextFormField(
+                controller: passwordController,
+                obscureText: true,
+                decoration: InputDecoration(labelText: 'senha'),
+              )
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: (){
+              if(passwordController.text.isEmpty){
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('A senha deve ser preenchida'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+                return;
+              }
+              AuthService().removeAccount(password: passwordController.text)
+                  .then((String? erro){
+                    if(erro == null){
+                      Navigator.pop(context);
+                    } else {
+                      Navigator.pop(context);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Erro ao remover a conta'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
+              });
+            },
+            child: Text("EXCLUIR CONTA"),
+          ),
+          TextButton(
+            onPressed: (){
+              Navigator.pop(context);
+            },
+            child: Text("CANCELAR"),
+          ),
+        ],
+      );
+    }
+  );
 }

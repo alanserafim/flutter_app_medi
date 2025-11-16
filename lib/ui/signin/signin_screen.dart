@@ -80,6 +80,7 @@ class _SigninScreenState extends State<SigninScreen> {
                   ),
                   SizedBox(height: 8),
                   TextFormField(
+                    obscureText: true,
                     controller: passwordController,
                     validator: (value) {
                       if (value!.isEmpty) {
