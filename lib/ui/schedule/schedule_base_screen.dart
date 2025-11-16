@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_medi/authentication/services/auth_service.dart';
@@ -18,6 +21,23 @@ class _ScheduleBaseScreenState extends State<ScheduleBaseScreen> {
   String _selectedFilter = "ALL";
   int _selectedIndex = 0;
   AuthService authService = AuthService();
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  List<DoseDoc> _items = [];
+  bool _loading = true;
+  StreamSubscription<QuerySnapshot>? _subscription;
+
+  @override
+  void initState() {
+    super.initState();
+    setupListeners();
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -30,7 +50,12 @@ class _ScheduleBaseScreenState extends State<ScheduleBaseScreen> {
           Navigator.pushNamed(context, '/medication');
           break;
         case 2:
-          Navigator.push(context, MaterialPageRoute(builder: (context) => UserScreen(user: widget.user)));
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => UserScreen(user: widget.user),
+            ),
+          );
           break;
       }
     });
@@ -38,6 +63,9 @@ class _ScheduleBaseScreenState extends State<ScheduleBaseScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final name = widget.user.displayName!;
+    final firstName = name.split(' ')[0];
+
     return Scaffold(
       appBar: null,
       body: Padding(
@@ -48,10 +76,10 @@ class _ScheduleBaseScreenState extends State<ScheduleBaseScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Bem vindo, usuário", style: TextStyle(fontSize: 22)),
+                Text("Bem vindo, $firstName", style: TextStyle(fontSize: 22)),
                 IconButton(
                   onPressed: () {
-                    setState(() {});
+                    _reloadOnce();
                   },
                   icon: Icon(Icons.refresh),
                 ),
@@ -102,84 +130,7 @@ class _ScheduleBaseScreenState extends State<ScheduleBaseScreen> {
                 ),
               ],
             ),
-            Expanded(
-              child: FutureBuilder<List<DoseDoc>>(
-                future: DoseService().findAll(),
-                builder: (context, snapshot) {
-                  List<DoseDoc>? items = snapshot.data;
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.none:
-                      return Center(
-                        child: Column(
-                          children: [
-                            CircularProgressIndicator(),
-                            Text('Carregando'),
-                          ],
-                        ),
-                      );
-                    case ConnectionState.waiting:
-                      return Center(
-                        child: Column(
-                          children: [
-                            CircularProgressIndicator(),
-                            Text('Carregando'),
-                          ],
-                        ),
-                      );
-                    case ConnectionState.active:
-                      return Center(
-                        child: Column(
-                          children: [
-                            CircularProgressIndicator(),
-                            Text('Carregando'),
-                          ],
-                        ),
-                      );
-                    case ConnectionState.done:
-                      if (snapshot.hasData && items != null) {
-                        if (items.isNotEmpty) {
-                          items.sort((a, b) => a.data.dayTime.compareTo(b.data.dayTime));
-                          List<DoseDoc> filteredItems =
-                          items.where((dose) {
-                            if (_selectedFilter == "ALL") return true;
-                            return dose.data.status == _selectedFilter;
-                          }).toList();
-                          if (filteredItems.isNotEmpty) {
-                            return ListView.builder(
-                              itemCount: filteredItems.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                final DoseDoc dose = filteredItems[index];
-                                return MedicineCard(
-                                  id: dose.id,
-                                  name: dose.data.name,
-                                  time: dose.data.dayTime,
-                                  dosage: dose.data.dosage,
-                                  description: dose.data.alias,
-                                  icon: dose.data.icon,
-                                  status: dose.data.status,
-                                );
-                              },
-                            );
-                          }
-                        }
-                      }
-                  }
-                  return Center(
-                    child: Column(
-                      children: [
-                        SizedBox(height: 16),
-                        Icon(Icons.error_outline, size: 64),
-                        Text(
-                          'Não há nenhum medicamento cadastrado',
-                          style: TextStyle(fontSize: 24),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
+            Expanded(child: _buildContent()),
           ],
         ),
       ),
@@ -201,7 +152,107 @@ class _ScheduleBaseScreenState extends State<ScheduleBaseScreen> {
     );
   }
 
-  setupListeners(){
+  Widget _buildContent() {
+    if (_loading) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(height: 8),
+            Text('Carregando'),
+          ],
+        ),
+      );
+    }
+
+    if (_items.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(height: 16),
+            Icon(Icons.error_outline, size: 64),
+            Text(
+              'Não há nenhum medicamento cadastrado',
+              style: TextStyle(fontSize: 24),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      );
+    }
+
+    final items = List<DoseDoc>.from(_items);
+    items.sort((a, b) => a.data.dayTime.compareTo(b.data.dayTime));
+    final filteredItems =
+        items.where((dose) {
+          if (_selectedFilter == "ALL") return true;
+          return dose.data.status == _selectedFilter;
+        }).toList();
+
+    if (filteredItems.isEmpty) {
+      return Center(child: Text('Nenhum medicamento corresponde ao filtro.'));
+    }
+
+    return ListView.builder(
+      itemCount: filteredItems.length,
+      itemBuilder: (BuildContext context, int index) {
+        final DoseDoc dose = filteredItems[index];
+        return MedicineCard(
+          id: dose.id,
+          name: dose.data.name,
+          time: dose.data.dayTime,
+          dosage: dose.data.dosage,
+          description: dose.data.alias,
+          icon: dose.data.icon,
+          status: dose.data.status,
+        );
+      },
+    );
   }
 
+  setupListeners() async {
+    final String uid = FirebaseAuth.instance.currentUser!.uid;
+    await _subscription?.cancel();
+
+    _subscription = firestore
+        .collection(uid)
+        .doc('data')
+        .collection('doses')
+        .snapshots()
+        .listen((querySnapshot) async {
+          try {
+            final list = await DoseService().findAll();
+            setState(() {
+              _items = list;
+              _loading = false;
+            });
+          } catch (e, st) {
+            debugPrint('Erro ao carregar doses: $e\n$st');
+            setState(() {
+              _items = [];
+              _loading = false;
+            });
+          }
+        });
+  }
+
+  void _reloadOnce() async {
+    setState(() {
+      _loading = true;
+    });
+    try {
+      final list = await DoseService().findAll();
+      setState(() {
+        _items = list;
+        _loading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _items = [];
+        _loading = false;
+      });
+    }
+  }
 }
