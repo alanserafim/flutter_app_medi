@@ -9,6 +9,7 @@
 
 ### Disciplinas: 
 * Desenvolvimento Híbrido de Aplicativos
+* Webservices e MBaaS (Mobile Backend as a Service) 
   
 
 ## Ferramentas
@@ -18,6 +19,9 @@ As seguintes ferramentas foram usadas na construção do projeto:
 
 - Flutter
 - SQFLite
+- Firebase Authentication
+- Firebase Firestore
+- Firebase Storage
 
 ### 👉 **_Desenvolvimento Geral_**
 
@@ -41,7 +45,7 @@ Com os objetivos gerais de controlar medicamentos e lembrar usuários sobre os h
 ### Descrição do ambiente técnico
 
 O sistema é composto por um app desenvolvido em flutter e disponibilizado hibridamente para Android e IOS.
-A persistência local é realizada por meio de banco de dados relacional utilizando a biblioteca SQFlite. 
+A persistência local foi realizada por meio de banco de dados relacional utilizando a biblioteca SQFlite e posteriormente substituída pela persistência em nuvem utilizando as ferramentas do Firebase.
 
 
 ### Diagrama de Classes de Domínio
